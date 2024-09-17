@@ -17,7 +17,17 @@
     "status":"available"
   },
   "UpdatePet": {
+    "Id":"1022",
     "Name": "Fluffy",
+    "Category":{
+      "Id":1,
+      "Name":"High category2"
+    },
+    "PhotoUrls":[ "https://example.com/fluffy.jpg"],
+    "tags":[{
+      "Id":1,
+      "Name":"pets"
+    }],
     "status":"sold"
   },
   

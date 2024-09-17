@@ -97,23 +97,8 @@ namespace PetStore5.Steps
         [When(@"I update the pet with the new name and status from config file")]
         public async Task WhenIUpdateThePetWithNameAndStatus()
         {
-            var updateName = _scenarioContext["UpdatePetName"].ToString();
-            var updateStatus = _scenarioContext["UpdatePetStatus"].ToString();
-            
-            //_updatePet = _scenarioContext["UpdatePet"] as Pet;
-            if (updateName != null && updateStatus != null)
-            {
-                {
-                    var updatedPet = new Pet
-                    {
-                        Id = _createdPetId,  // Use the same pet ID for the update
-                        Name = updateName,
-                        Status = updateStatus
-                    };
-
-                    _response = await _httpClient.PutAsJsonAsync("pet", updatedPet);
-                }
-            }
+            var updatedPet = _scenarioContext["UpdatePet"] as Pet;
+            _response = await _httpClient.PutAsJsonAsync("pet", updatedPet);
             _response?.EnsureSuccessStatusCode();  // Throws if not successful
         }
 
