@@ -1,12 +1,12 @@
 namespace PetStore5.Models
 {
-    public class Invalid_Pet
+    public class InvalidPet
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public Category category { get; set; }
-        public string[] photoUrls { get; set; }
-        public Category[] tags { get; set; }
-        public string status { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public Category Category { get; set; }
+        public string[] PhotoUrls { get; set; }
+        public Category[] Tags { get; set; }
+        public string Status { get; set; }
     }
 }

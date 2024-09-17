@@ -9,29 +9,32 @@ namespace PetStore5.Steps
     public class PetStoreSteps
     {
         private readonly HttpClient _httpClient;
-        private HttpResponseMessage _response = null!;
-        private Pet _newPet = null!;
+        private HttpResponseMessage? _response;
+        private Pet? _newPet;
         private int _createdPetId;
+        
+        private readonly ScenarioContext _scenarioContext;
 
-        public PetStoreSteps()
-        {
+        public PetStoreSteps(ScenarioContext scenarioContext)
+        { 
+            _scenarioContext = scenarioContext;
             _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri("https://petstore.swagger.io/v2/");  
+            // Retrieve the base address from ScenarioContext
+            if (_scenarioContext.TryGetValue("BaseUrl", out string baseAddress))
+            {
+                _httpClient.BaseAddress = new Uri(baseAddress);
+            }
+            else
+            {
+                throw new InvalidOperationException("Base address is not set in the configuration file.");
+            } 
+           
         }
 
-        [Given(@"I create a new pet with the name ""(.*)"", category ""(.*)"", photoUrls, tags, and status ""(.*)""")]
-        public async Task GivenICreateANewPetWithAllProperties(string name, string category, string status)
+        [Given(@"I create a new pet using the configuration file")]
+        public async Task GivenICreateANewPetWithAllProperties()
         {
-            var random = new Random();
-            _newPet = new Pet
-            {
-                id = random.Next(1, 10000),  // Random pet ID
-                name = name,
-                category = new Category { id = 1, name = category },
-                photoUrls = new[] { "https://example.com/fluffy.jpg" },
-                tags = new[] { new Category { id = 1, name = "cute" } },
-                status = status
-            };
+            _newPet = _scenarioContext["Pet"] as Pet;
 
             _response = await _httpClient.PostAsJsonAsync("pet", _newPet);
             _response.EnsureSuccessStatusCode();  // Throws if not successful
@@ -52,71 +55,86 @@ namespace PetStore5.Steps
         [Then(@"all properties of the retrieved pet should match the created pet")]
         public async Task ThenAllPropertiesOfTheRetrievedPetShouldMatchTheCreatedPet()
         {
-            var content = await _response.Content.ReadAsStringAsync();
-            var retrievedPet = JObject.Parse(content);
-
-            // Check all properties against the original created pet
-            Assert.AreEqual(_newPet.id, (int)retrievedPet["id"]);
-            Assert.AreEqual(_newPet.name, (string)retrievedPet["name"]);
-            Assert.AreEqual(_newPet.category.id, (int)retrievedPet["category"]["id"]);
-            Assert.AreEqual(_newPet.category.name, (string)retrievedPet["category"]["name"]);
-            Assert.AreEqual(_newPet.status, (string)retrievedPet["status"]);
-
-            // Check photoUrls and tags arrays
-            var photoUrls = retrievedPet["photoUrls"].ToObject<string[]>();
-            Assert.AreEqual(_newPet.photoUrls.Length, photoUrls.Length);
-            for (int i = 0; i < _newPet.photoUrls.Length; i++)
+            if (_response != null)
             {
-                Assert.AreEqual(_newPet.photoUrls[i], photoUrls[i]);
+                var content = await _response.Content.ReadAsStringAsync();
+                var retrievedPet = JObject.Parse(content);
+
+                // Check all properties against the original created pet
+                if (_newPet != null)
+                {
+                    Assert.AreEqual(_newPet.Id, (int)retrievedPet["id"]);
+                    Assert.AreEqual(_newPet.Name, (string)retrievedPet["name"]);
+                    Assert.AreEqual(_newPet.Category.Id, (int)retrievedPet["category"]["id"]);
+                    Assert.AreEqual(_newPet.Category.Name, (string)retrievedPet["category"]["name"]);
+                    Assert.AreEqual(_newPet.Status, (string)retrievedPet["status"]);
+
+                    // Check photoUrls and tags arrays
+                    var photoUrls = retrievedPet["photoUrls"].ToObject<string[]>();
+                    Assert.AreEqual(_newPet.PhotoUrls.Length, photoUrls.Length);
+                    for (int i = 0; i < _newPet.PhotoUrls.Length; i++)
+                    {
+                        Assert.AreEqual(_newPet.PhotoUrls[i], photoUrls[i]);
+                    }
+
+                    var tags = retrievedPet["tags"].ToObject<Category[]>();
+                    Assert.AreEqual(_newPet.Tags.Length, tags.Length);
+                    for (int i = 0; i < _newPet.Tags.Length; i++)
+                    {
+                        Assert.AreEqual(_newPet.Tags[i].Id, tags[i].Id);
+                        Assert.AreEqual(_newPet.Tags[i].Name, tags[i].Name);
+                    }
+                }
             }
+        }
 
-            var tags = retrievedPet["tags"].ToObject<Category[]>();
-            Assert.AreEqual(_newPet.tags.Length, tags.Length);
-            for (int i = 0; i < _newPet.tags.Length; i++)
+        [Given(@"I have created a new dog with values from configuration")]
+        public async Task GivenIHaveCreatedAPetWithNameAndStatus()
+        {
+            await GivenICreateANewPetWithAllProperties();  
+        }
+
+        [When(@"I update the pet with the new name and status from config file")]
+        public async Task WhenIUpdateThePetWithNameAndStatus()
+        {
+            var updateName = _scenarioContext["UpdatePetName"].ToString();
+            var updateStatus = _scenarioContext["UpdatePetStatus"].ToString();
+            
+            //_updatePet = _scenarioContext["UpdatePet"] as Pet;
+            if (updateName != null && updateStatus != null)
             {
-                Assert.AreEqual(_newPet.tags[i].id, tags[i].id);
-                Assert.AreEqual(_newPet.tags[i].name, tags[i].name);
+                {
+                    var updatedPet = new Pet
+                    {
+                        Id = _createdPetId,  // Use the same pet ID for the update
+                        Name = updateName,
+                        Status = updateStatus
+                    };
+
+                    _response = await _httpClient.PutAsJsonAsync("pet", updatedPet);
+                }
+            }
+            _response?.EnsureSuccessStatusCode();  // Throws if not successful
+        }
+
+        [Then(@"the pet should have updated name and status")]
+        public async Task ThenThePetNameShouldBeAndStatusShouldBe()
+        {
+            if (_response != null)
+            {
+                var content = await _response.Content.ReadAsStringAsync();
+                var updatedPet = JObject.Parse(content);
+
+                // Check that the pet's name and status match the expected values
+                Assert.AreEqual(_scenarioContext["UpdatePetName"].ToString(), (string)updatedPet["name"]);
+                Assert.AreEqual(_scenarioContext["UpdatePetStatus"].ToString(), (string)updatedPet["status"]);
             }
         }
 
-        [Given(@"I have created a new dog with the name ""(.*)"" and status ""(.*)""")]
-        public async Task GivenIHaveCreatedAPetWithNameAndStatus(string name, string status)
+        [Given(@"a new dog is created using config file")]
+        public async Task GivenIHaveCreatedAgainAPetWithNameAndStatus()
         {
-            await GivenICreateANewPetWithAllProperties(name, "Cats", status);  // Assuming default category and photoUrls/tags for this step
-        }
-
-        [When(@"I update the pet with the name ""(.*)"" and status ""(.*)""")]
-        public async Task WhenIUpdateThePetWithNameAndStatus(string newName, string newStatus)
-        {
-            var updatedPet = new Pet
-            {
-                id = _createdPetId,  // Use the same pet ID for the update
-                name = newName,
-                category = new Category { id = 1, name = "Cats" },
-                photoUrls = new[] { "https://example.com/fluffy.jpg" },
-                tags = new[] { new Category { id = 1, name = "cute" } },
-                status = newStatus
-            };
-
-            _response = await _httpClient.PutAsJsonAsync("pet", updatedPet);
-            _response.EnsureSuccessStatusCode();  // Throws if not successful
-        }
-
-        [Then(@"the pet name should be ""(.*)"" and status should be ""(.*)""")]
-        public async Task ThenThePetNameShouldBeAndStatusShouldBe(string expectedName, string expectedStatus)
-        {
-            var content = await _response.Content.ReadAsStringAsync();
-            var updatedPet = JObject.Parse(content);
-
-            // Check that the pet's name and status match the expected values
-            Assert.AreEqual(expectedName, (string)updatedPet["name"]);
-            Assert.AreEqual(expectedStatus, (string)updatedPet["status"]);
-        }
-
-        [Given(@"a new dog creation with the name ""(.*)"" and status ""(.*)""")]
-        public async Task GivenIHaveCreatedAgainAPetWithNameAndStatus(string name, string status)
-        {
-            await GivenICreateANewPetWithAllProperties(name, "Dogs", status);  // Assuming default category and photoUrls/tags for this step
+            await GivenICreateANewPetWithAllProperties(); 
         }
         
         [When(@"I delete the pet")]
@@ -133,19 +151,10 @@ namespace PetStore5.Steps
             Assert.AreEqual(System.Net.HttpStatusCode.NotFound, _response.StatusCode);
         }
         
-        [When(@"I send POST request with petId '(.*)'")]
-        public async Task WhenISendAPostRequestToCreateAPetWithInvalidPetId(string invalidPetId)
+        [When(@"I send POST request with invalid petId defined in config file")]
+        public async Task WhenISendAPostRequestToCreateAPetWithInvalidPetId()
         {
-            var invalidPet = new Invalid_Pet
-            {
-                id = invalidPetId,
-                name = "InvalidPet",
-                category = new Category { id = 1, name = "Cats" },
-                photoUrls = new[] { "https://example.com/fluffy.jpg" },
-                tags = new[] { new Category { id = 1, name = "cute" } },
-                status = "available"
-            };
-
+            var invalidPet = _scenarioContext["InvalidPet"] as InvalidPet;
             try
             {
                 _response = await _httpClient.PostAsJsonAsync("pet", invalidPet);
@@ -163,9 +172,15 @@ namespace PetStore5.Steps
         [Then(@"the response should have status code 500 and contain an error message")]
         public async Task ThenTheResponseShouldHaveStatusCode500AndContainAnErrorMessage()
         {
-            Assert.AreEqual(System.Net.HttpStatusCode.InternalServerError, _response.StatusCode);
-            var content = await _response.Content.ReadAsStringAsync();
-            StringAssert.Contains("message", content, "something bad happened");
+            if (_response != null)
+            {
+                Assert.AreEqual(System.Net.HttpStatusCode.InternalServerError, _response.StatusCode);
+                var content = await _response.Content.ReadAsStringAsync();
+                var jsonObject = JObject.Parse(content);
+                var message = jsonObject["message"]?.ToString();
+                Console.WriteLine(message);
+                Assert.AreEqual(message, "something bad happened", "error message is wrong");
+            }
         }
     }
 }

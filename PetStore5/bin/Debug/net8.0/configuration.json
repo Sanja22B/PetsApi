@@ -1,0 +1,38 @@
+{
+  "Urls":{
+    "baseUrl":"https://petstore.swagger.io/v2/"
+  },
+  "Pet": {
+    "Id":1022,
+    "Name": "Buddy2",
+    "Category":{
+      "Id":1,
+      "Name":"High category2"
+    },
+    "PhotoUrls":[ "https://example.com/fluffy.jpg"],
+    "tags":[{
+      "Id":1,
+      "Name":"pets"
+    }],
+    "status":"available"
+  },
+  "UpdatePet": {
+    "Name": "Fluffy",
+    "status":"sold"
+  },
+  
+  "InvalidPet": {
+    "Id":"abc",
+    "Name": "Invalid Pet",
+    "Category":{
+      "Id":1,
+      "Name":"High category2"
+    },
+    "PhotoUrls":[ "https://example.com/fluffy.jpg"],
+    "tags":[{
+      "Id":1,
+      "Name":"pets"
+    }],
+    "status":"available"
+  }
+}

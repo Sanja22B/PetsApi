@@ -91,8 +91,7 @@ namespace PetStore5.Features
             {
                 await this.ScenarioStartAsync();
 #line 4
-        await testRunner.GivenAsync("I create a new pet with the name \"Scary\", category \"Dogs\", photoUrls, tags, and s" +
-                        "tatus \"pending\"", ((string)(null)), ((Reqnroll.Table)(null)), "Given ");
+        await testRunner.GivenAsync("I create a new pet using the configuration file", ((string)(null)), ((Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 5
         await testRunner.WhenAsync("I retrieve the pet by its ID", ((string)(null)), ((Reqnroll.Table)(null)), "When ");
@@ -122,13 +121,13 @@ namespace PetStore5.Features
             {
                 await this.ScenarioStartAsync();
 #line 9
-        await testRunner.GivenAsync("I have created a new dog with the name \"Fluffy\" and status \"available\"", ((string)(null)), ((Reqnroll.Table)(null)), "Given ");
+        await testRunner.GivenAsync("I have created a new dog with values from configuration", ((string)(null)), ((Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 10
-        await testRunner.WhenAsync("I update the pet with the name \"Snowball\" and status \"sold\"", ((string)(null)), ((Reqnroll.Table)(null)), "When ");
+        await testRunner.WhenAsync("I update the pet with the new name and status from config file", ((string)(null)), ((Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 11
-        await testRunner.ThenAsync("the pet name should be \"Snowball\" and status should be \"sold\"", ((string)(null)), ((Reqnroll.Table)(null)), "Then ");
+        await testRunner.ThenAsync("the pet should have updated name and status", ((string)(null)), ((Reqnroll.Table)(null)), "Then ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -152,7 +151,7 @@ namespace PetStore5.Features
             {
                 await this.ScenarioStartAsync();
 #line 14
-        await testRunner.GivenAsync("a new dog creation with the name \"Fluffy\" and status \"available\"", ((string)(null)), ((Reqnroll.Table)(null)), "Given ");
+        await testRunner.GivenAsync("a new dog is created using config file", ((string)(null)), ((Reqnroll.Table)(null)), "Given ");
 #line hidden
 #line 15
         await testRunner.WhenAsync("I delete the pet", ((string)(null)), ((Reqnroll.Table)(null)), "When ");
@@ -183,7 +182,7 @@ namespace PetStore5.Features
             {
                 await this.ScenarioStartAsync();
 #line 19
-        await testRunner.WhenAsync("I send POST request with petId \'abc\'", ((string)(null)), ((Reqnroll.Table)(null)), "When ");
+        await testRunner.WhenAsync("I send POST request with invalid petId defined in config file", ((string)(null)), ((Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 20
         await testRunner.ThenAsync("the response should have status code 500 and contain an error message", ((string)(null)), ((Reqnroll.Table)(null)), "Then ");
