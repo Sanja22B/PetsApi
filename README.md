@@ -8,11 +8,6 @@ The project is developed in JetBrains Rider IDE and is compatible with .NET 8.0.
 - [Technologies](#technologies)
 - [Setup Instructions](#setup-instructions)
 - [Running Tests](#running-tests)
-- [Project Structure](#project-structure)
-- [Writing Tests](#writing-tests)
-- [Best Practices](#best-practices)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Project Overview
 
@@ -25,7 +20,7 @@ The tests cover various functionalities of the system, including CRUD (PUT, POST
 
 - **C#** (version 8.0)
 - **.NET SDK** (version 8.0)
-- **ReqnRoll.Nunit** (version 4.x)
+- **ReqnRoll.Nunit** (1.0.0)
 - **NUnit** (for running tests)
 - **JetBrains Rider IDE** 
 - **RestSharp** 
@@ -44,3 +39,8 @@ The tests cover various functionalities of the system, including CRUD (PUT, POST
    ```bash
    git clone https://github.com/your-username/PetsApi.git
    cd your-project
+   
+## Running tests
+
+Navigate to folder "Features" and choose scenario to run, or click on "Run All" to run all scenarios.
+
