@@ -1,0 +1,79 @@
+# Ignore Visual Studio temporary files, build results, and
+# user-specific files
+.vscode/
+.vs/
+.idea/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.userprefs
+*.csproj.user
+
+# Auto-generated files
+Generated\
+
+# Build results
+[Bb]in/
+[Oo]bj/
+*.dll
+*.pdb
+*.exe
+*.app
+*.ipa
+*.dSYM
+*.DS_Store
+
+# Debug and Release configurations
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+
+# .NET Core specific
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet packages
+*.nupkg
+packages/
+.nuget/
+**/project.lock.json
+**/project.fragment.lock.json
+
+# Rider-specific settings
+.idea/
+*.sln.iml
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code specific
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Coverlet Coverage files
+coverage*.json
+coverage*.xml
+coverage*.info
+
+# JetBrains Rider
+.idea/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/shelf/
+.idea/modules.xml
+.idea/.idea.sln.iml
+*.sln.iml
+
+# Mac files
+*.DS_Store

@@ -36,21 +36,6 @@ namespace PetStore5.Hooks
             
             var invalidPet = config.GetSection("InvalidPet").Get<InvalidPet>();
             _scenarioContext["InvalidPet"] = invalidPet;
-            
-            // var id = config["Pet:Id"];
-            // var petName = config["Pet:Name"];
-            // var category = config["Pet:Category"];
-            // var photoUrls = config.GetSection("Pet:PhotoUrls").Get<string[]>();
-            // var tags = config["Pet:Tags"];
-            // var status = config["Pet:Status"];
-            
-            // Replace the Pets parameters in the feature file
-            // _scenarioContext["PetName"] = petName;
-            // _scenarioContext["Id"] = id;
-            // _scenarioContext["CategoryName"] = pet?.Category.Name;
-            // _scenarioContext["PhotoUrls"] = photoUrls;
-            // _scenarioContext["Tags"] = tags;
-            // _scenarioContext["Status"] = status;
         }
     }
 }
